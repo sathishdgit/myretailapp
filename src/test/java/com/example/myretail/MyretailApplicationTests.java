@@ -45,10 +45,18 @@ class MyretailApplicationTests {
 	}
 	
 	@Test
+	void testGetProductPriceForValidProduct() {
+		int productId = 13860428;
+		BigDecimal prodPrice = new BigDecimal("13.49");
+		ResponseEntity<ProductResponse> respEntity = retailAppController.getProductDetails(productId);
+		assertEquals(prodPrice, respEntity.getBody().getProdCurrentPrice().getValue());
+	}
+	
+	@Test
 	void testUpdateProductsPrice() {
 		
 		int productId = 12345678;
-		BigDecimal price = BigDecimal.valueOf(12.11);
+		BigDecimal price = new BigDecimal("12.11");
 		String currencyCode = "USD";
 		
 		ProductCurrentPrice prodCurrentPrice = new ProductCurrentPrice();
@@ -60,6 +68,20 @@ class MyretailApplicationTests {
 		
 		ResponseEntity<String> respEntity = retailAppController.updateProductPrice(productId, prodCurrentPrice);
 		assertEquals(HttpStatus.OK, respEntity.getStatusCode());
+	}
+	
+	@Test
+	void testUpdateProductsPriceWithoutPrice() {
+		
+		int productId = 12345678;
+		
+		ProductCurrentPrice prodCurrentPrice = new ProductCurrentPrice();
+		CurrentPrice currentPrice = new CurrentPrice();
+
+		prodCurrentPrice.setCurrentPrice(currentPrice);
+		
+		ResponseEntity<String> respEntity = retailAppController.updateProductPrice(productId, prodCurrentPrice);
+		assertEquals(HttpStatus.BAD_REQUEST, respEntity.getStatusCode());
 	}
 
 }
